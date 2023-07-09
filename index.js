@@ -133,7 +133,7 @@ async function main () {
   }
   // console.log(util.inspect(dadosDosArquivos, false, null, true))
   const response = await enviaAsMovimentacoesExtraidasParaAURUMs(dadosDosArquivos);
-  console.log(response.data);
+  console.log(util.inspect(response, false, null, true));
 }
 
 main();
