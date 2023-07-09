@@ -53,9 +53,15 @@ async function enviaAsMovimentacoesExtraidasParaAURUMs (movimentacoesPorArquivo)
       const response = await axios.post(`${url}/api/ext-salva-movimentacoes-externas`, {
         movimentacoesPorArquivo
       }, { headers });
-      responses.push(response.data);
+      responses.push({
+        serverResponse: response.data,
+        url
+      });
     } catch (error) {
-      errorResponses.push(error);
+      errorResponses.push({
+        url,
+        serverResponse: error.response.data,
+      });
     }
   }
   return {
