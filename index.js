@@ -11,6 +11,7 @@
 const fs = require('fs');
 const moment = require('moment-timezone');
 const util = require('util');
+const axios = require('axios');
 
 const dotenv = require('dotenv');
 dotenv.config();
@@ -34,6 +35,17 @@ async function retornaOsArquivosOfxDeHojeOuOntem (dirname) {
       }));
     });
   });
+}
+
+async function enviaAsMovimentacoesExtraidasParaOAurum (movimentacoesPorArquivo) {
+  const url = process.env.AURUM_URL;
+  const headers = {
+    'Content-Type': 'application/json'
+  };
+  const response = await axios.post(`${url}/api/ext-salva-movimentacoes-externas`, {
+    movimentacoesPorArquivo
+  }, { headers });
+  return response;
 }
 
 async function main () {
@@ -90,8 +102,14 @@ async function main () {
         movimentacaoFormatada.movimentacoes.push(movimentacao);
       } else if (linha.trim()) {
         // ignora as linhas em branco
-        // cabecalho ou rodape
-        if (contador === linhas.length - (isUltimaLinhaEmBranco ? 3 : 2)) {
+        // cabecalho
+        if (contador === 0) {
+          const linhaComTrim = linha.trim();
+          const agencia = linhaComTrim.substring(53, 57);
+          movimentacaoFormatada.agencia = agencia;
+        }
+        // rodape
+        else if (contador === linhas.length - (isUltimaLinhaEmBranco ? 3 : 2)) {
           const linhaComTrim = linha.trim();
           const dataSaldoInicial = linhaComTrim.substring(142, 150);
           const saldoFinal = linhaComTrim.substring(150, 168);
@@ -105,7 +123,9 @@ async function main () {
     }
     dadosDosArquivos.push(movimentacaoFormatada);
   }
-  console.log(util.inspect(dadosDosArquivos, false, null, true))
+  // console.log(util.inspect(dadosDosArquivos, false, null, true))
+  const response = await enviaAsMovimentacoesExtraidasParaOAurum(dadosDosArquivos);
+  console.log(response.data);
 }
 
 main();
