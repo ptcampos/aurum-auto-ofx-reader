@@ -154,7 +154,8 @@ async function main () {
 }
 
 // main();
-const job = nodeCron.schedule('*/120 * * * *', main, {
+const cronStr = process.env.CRON_STR || '*/1 * * * *';
+const job = nodeCron.schedule(cronStr, main, {
   scheduled: false,
   timezone: "America/Sao_Paulo"
 });
