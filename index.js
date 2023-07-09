@@ -54,12 +54,14 @@ async function enviaAsMovimentacoesExtraidasParaAURUMs (movimentacoesPorArquivo)
         movimentacoesPorArquivo
       }, { headers });
       responses.push({
+        arquivosEnviados: movimentacoesPorArquivo.length,
         serverResponse: response.data,
         url
       });
     } catch (error) {
       errorResponses.push({
         url,
+        arquivosEnviados: movimentacoesPorArquivo.length,
         serverResponse: error.response.data,
       });
     }
