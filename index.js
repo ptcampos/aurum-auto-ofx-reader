@@ -19,6 +19,11 @@ dotenv.config();
 // Define as variáveis
 const dir = process.env.OFX_DIR;
 const padraoNome = 'ext_';
+// LISTA COM AS URLS DAS AURUMs
+const URLAURUMsParaEnviar = [
+  'https://aurum-v2.sistemaaurum.com',
+  'http://grupoyes.sistemaaurum.com',
+]
 
 // Função para ler os arquivos
 async function retornaOsArquivosOfxDeHojeOuOntem (dirname) {
@@ -37,15 +42,18 @@ async function retornaOsArquivosOfxDeHojeOuOntem (dirname) {
   });
 }
 
-async function enviaAsMovimentacoesExtraidasParaOAurum (movimentacoesPorArquivo) {
-  const url = process.env.AURUM_URL;
-  const headers = {
-    'Content-Type': 'application/json'
-  };
-  const response = await axios.post(`${url}/api/ext-salva-movimentacoes-externas`, {
-    movimentacoesPorArquivo
-  }, { headers });
-  return response;
+async function enviaAsMovimentacoesExtraidasParaAURUMs (movimentacoesPorArquivo) {
+  const promises = [];
+  for (const url of URLAURUMsParaEnviar) {
+    const headers = {
+      'Content-Type': 'application/json'
+    };
+    const response = await axios.post(`${url}/api/ext-salva-movimentacoes-externas`, {
+      movimentacoesPorArquivo
+    }, { headers });
+    promises.push(response);
+  }
+  return Promise.all(promises);
 }
 
 async function main () {
@@ -124,7 +132,7 @@ async function main () {
     dadosDosArquivos.push(movimentacaoFormatada);
   }
   // console.log(util.inspect(dadosDosArquivos, false, null, true))
-  const response = await enviaAsMovimentacoesExtraidasParaOAurum(dadosDosArquivos);
+  const response = await enviaAsMovimentacoesExtraidasParaAURUMs(dadosDosArquivos);
   console.log(response.data);
 }
 
