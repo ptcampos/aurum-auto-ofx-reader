@@ -147,7 +147,7 @@ async function main () {
     }
     dadosDosArquivos.push(movimentacaoFormatada);
   }
-  // console.log(util.inspect(dadosDosArquivos, false, null, true))
+  console.log(util.inspect(dadosDosArquivos, false, null, true))
   const response = await enviaAsMovimentacoesExtraidasParaAURUMs(dadosDosArquivos);
   console.log(util.inspect(response, false, null, true));
 }
