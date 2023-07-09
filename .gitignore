@@ -1,0 +1,3 @@
+# create a gititnore file for a node application and add .env file to it
+node_modules
+.env
