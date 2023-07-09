@@ -12,6 +12,7 @@ const fs = require('fs');
 const moment = require('moment-timezone');
 const util = require('util');
 const axios = require('axios');
+const nodeCron = require("node-cron");
 
 const dotenv = require('dotenv');
 dotenv.config();
@@ -147,9 +148,15 @@ async function main () {
     }
     dadosDosArquivos.push(movimentacaoFormatada);
   }
-  console.log(util.inspect(dadosDosArquivos, false, null, true))
+  // console.log(util.inspect(dadosDosArquivos, false, null, true))
   const response = await enviaAsMovimentacoesExtraidasParaAURUMs(dadosDosArquivos);
   console.log(util.inspect(response, false, null, true));
 }
 
-main();
+// main();
+const job = nodeCron.schedule('*/120 * * * *', main, {
+  scheduled: false,
+  timezone: "America/Sao_Paulo"
+});
+
+job.start();
