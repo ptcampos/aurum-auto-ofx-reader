@@ -43,17 +43,25 @@ async function retornaOsArquivosOfxDeHojeOuOntem (dirname) {
 }
 
 async function enviaAsMovimentacoesExtraidasParaAURUMs (movimentacoesPorArquivo) {
-  const promises = [];
+  const responses = [];
+  const errorResponses = [];
   for (const url of URLAURUMsParaEnviar) {
     const headers = {
       'Content-Type': 'application/json'
     };
-    const response = await axios.post(`${url}/api/ext-salva-movimentacoes-externas`, {
-      movimentacoesPorArquivo
-    }, { headers });
-    promises.push(response);
+    try {
+      const response = await axios.post(`${url}/api/ext-salva-movimentacoes-externas`, {
+        movimentacoesPorArquivo
+      }, { headers });
+      responses.push(response.data);
+    } catch (error) {
+      errorResponses.push(error);
+    }
   }
-  return Promise.all(promises);
+  return {
+    responses,
+    errorResponses
+  };
 }
 
 async function main () {
