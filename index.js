@@ -155,7 +155,7 @@ async function main() {
     console.log(util.inspect(response, false, null, true));
 }
 
-// main();
+main();
 const cronStr = process.env.CRON_STR || '*/1 * * * *';
 const job = nodeCron.schedule(cronStr, main, {
     scheduled: false,
