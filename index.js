@@ -80,8 +80,10 @@ async function main() {
     const arquivos = await retornaOsArquivosOfxDeHojeOuOntem(dir);
     const dadosDosArquivos = [];
     for (const nomeArquivo of arquivos) {
+        console.log('arquivo encontrado nomeArquivo', nomeArquivo);
         // extrai o conteúdo do arquivo
         const conteudo = fs.readFileSync(`${dir}/${nomeArquivo}`, 'utf8');
+        console.log('conteudo extraido');
         const codigoBanco = nomeArquivo.split('_')[1];
         const numeroConta = nomeArquivo.split('_')[2];
         const movimentacaoFormatada = {
@@ -148,6 +150,7 @@ async function main() {
         dadosDosArquivos.push(movimentacaoFormatada);
     }
     // console.log(util.inspect(dadosDosArquivos, false, null, true))
+    console.log('Enviando para o AURUMs');
     const response = await enviaAsMovimentacoesExtraidasParaAURUMs(dadosDosArquivos);
     console.log(util.inspect(response, false, null, true));
 }
