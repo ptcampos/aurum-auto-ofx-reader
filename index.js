@@ -84,7 +84,9 @@ async function main() {
         const conteudo = fs.readFileSync(`${dir}/${nomeArquivo}`, 'utf8');
         const codigoBanco = nomeArquivo.split('_')[1];
         const agencia = nomeArquivo.split('_')[2];
-        const numeroDaContaSemDigito = nomeArquivo.split('_')[3];
+        let numeroDaContaSemDigito = nomeArquivo.split('_')[3];
+        // remove .000.ret do final do numero da conta
+        numeroDaContaSemDigito = numeroDaContaSemDigito.split('.')[0];
         console.log('Data:', moment().tz('UTC').format('DD/MM/YYYY HH:mm:ss z'));
         console.log('Arquivo:', nomeArquivo, 'Banco:', codigoBanco, 'Agência:', agencia, 'Conta:', numeroDaContaSemDigito);
         const movimentacaoFormatada = {
