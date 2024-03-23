@@ -85,6 +85,8 @@ async function main() {
         const codigoBanco = nomeArquivo.split('_')[1];
         const agencia = nomeArquivo.split('_')[2];
         const numeroDaContaSemDigito = nomeArquivo.split('_')[3];
+        console.log('Data:', moment().tz('UTC').format('DD/MM/YYYY HH:mm:ss z'));
+        console.log('Arquivo:', nomeArquivo, 'Banco:', codigoBanco, 'Agência:', agencia, 'Conta:', numeroDaContaSemDigito);
         const movimentacaoFormatada = {
             dataLeitura: moment().tz('UTC').format('DD/MM/YYYY HH:mm:ss z'),
             nomeArquivo,
