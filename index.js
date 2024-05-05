@@ -24,7 +24,7 @@ const padraoNome = 'ext_';
 const URLAURUMsParaEnviar = ['https://aurum-v2.sistemaaurum.com', 'http://grupoyes.sistemaaurum.com', 'http://sistemaaurum.com'];
 
 // Função para ler os arquivos
-async function retornaOsArquivosOfxDeHojeOuOntem(dirname) {
+async function retornaOsArquivosOfxDeDoisDiasAtrasAteHoje(dirname) {
     return new Promise((resolve, reject) => {
         fs.readdir(dirname, (err, filenames) => {
             if (err) {
@@ -34,7 +34,7 @@ async function retornaOsArquivosOfxDeHojeOuOntem(dirname) {
             resolve(
                 filenames.filter((filename) => {
                     const dataHoje = moment().format('DDMMYY');
-                    const dataOntem = moment().subtract(1, 'days').format('DDMMYY');
+                    const dataOntem = moment().subtract(2, 'days').format('DDMMYY');
                     return filename.includes(padraoNome) && (filename.includes(dataHoje) || filename.includes(dataOntem));
                 })
             );
@@ -77,7 +77,7 @@ async function enviaAsMovimentacoesExtraidasParaAURUMs(movimentacoesPorArquivo) 
 }
 
 async function main() {
-    const arquivos = await retornaOsArquivosOfxDeHojeOuOntem(dir);
+    const arquivos = await retornaOsArquivosOfxDeDoisDiasAtrasAteHoje(dir);
     const dadosDosArquivos = [];
     for (const nomeArquivo of arquivos) {
         // extrai o conteúdo do arquivo
