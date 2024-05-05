@@ -21,7 +21,7 @@ dotenv.config();
 const dir = process.env.OFX_DIR;
 const padraoNome = 'ext_';
 // LISTA COM AS URLS DAS AURUMs
-const URLAURUMsParaEnviar = ['https://aurum-v2.sistemaaurum.com', 'http://grupoyes.sistemaaurum.com', 'http://sistemaaurum.com'];
+const URLAURUMsParaEnviar = ['https://aurum-v2.sistemaaurum.com', 'http://grupoyes.sistemaaurum.com'];
 
 // Função para ler os arquivos
 async function retornaOsArquivosOfxDeDoisDiasAtrasAteHoje(dirname) {
