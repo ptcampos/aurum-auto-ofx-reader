@@ -12,7 +12,9 @@ const fs = require('fs');
 const moment = require('moment-timezone');
 const util = require('util');
 const axios = require('axios');
+const { isAxiosError } = require('axios');
 const nodeCron = require('node-cron');
+const { get } = require('lodash');
 
 const dotenv = require('dotenv');
 dotenv.config();
@@ -63,10 +65,14 @@ async function enviaAsMovimentacoesExtraidasParaAURUMs(movimentacoesPorArquivo) 
                 url
             });
         } catch (error) {
+            let formattedServerResponse = error;
+            if (isAxiosError(error)) {
+                formattedServerResponse = get(error, 'response.data', error);
+            }
             errorResponses.push({
                 url,
                 arquivosEnviados: movimentacoesPorArquivo.length,
-                serverResponse: error.response.data
+                serverResponse: formattedServerResponse
             });
         }
     }
@@ -114,7 +120,7 @@ async function main() {
                 // da posição 169 até 176 são informacoes adicionais da movimentação
                 // da posição 176 até 225 é a descrição da movimentação
                 const linhaComTrim = linha.trim();
-                const identificador = linhaComTrim.substring(0, 15);
+                // const identificador = linhaComTrim.substring(0, 15);
                 const data = linhaComTrim.substring(142, 150);
                 const valor = linhaComTrim.substring(150, 168);
                 const tipo = linhaComTrim.substring(168, 169);
@@ -122,24 +128,18 @@ async function main() {
                 // formata os dados da movimentação
                 movimentacao = {
                     ...movimentacao,
-                    identificador: identificador.trim(),
+                    // identificador: identificador.trim(),
                     data: moment(data, 'DDMMYYYY').format('DD/MM/YYYY'),
                     valor: parseFloat(valor) / 100,
                     tipo,
                     descricao: descricao.trim()
                 };
+                movimentacao.identificador = `${movimentacao.data} - ${movimentacao.valor} - ${movimentacao.tipo} - ${movimentacao.descricao}`;
                 // adiciona a movimentação no array de movimentações
                 movimentacaoFormatada.movimentacoes.push(movimentacao);
             } else if (linha.trim()) {
-                // ignora as linhas em branco
-                // cabecalho
-                if (contador === 0) {
-                    const linhaComTrim = linha.trim();
-                    const agencia = linhaComTrim.substring(53, 57);
-                    movimentacaoFormatada.agencia = agencia;
-                }
                 // rodape
-                else if (contador === linhas.length - (isUltimaLinhaEmBranco ? 3 : 2)) {
+                if (contador === linhas.length - (isUltimaLinhaEmBranco ? 3 : 2)) {
                     const linhaComTrim = linha.trim();
                     const dataSaldoInicial = linhaComTrim.substring(142, 150);
                     const saldoFinal = linhaComTrim.substring(150, 168);
