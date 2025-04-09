@@ -15,6 +15,7 @@ const axios = require("axios");
 const { isAxiosError } = require("axios");
 const nodeCron = require("node-cron");
 const { get } = require("lodash");
+const { v4: uuidv4 } = require("uuid");
 
 const dotenv = require("dotenv");
 dotenv.config();
@@ -169,7 +170,7 @@ async function main() {
                     tipo,
                     descricao: descricao.trim(),
                 };
-                movimentacao.identificador = `${movimentacao.data} - ${movimentacao.valor} - ${movimentacao.tipo} - ${movimentacao.descricao}`;
+                movimentacao.identificador = uuidv4();
                 // adiciona a movimentação no array de movimentações
                 movimentacaoFormatada.movimentacoes.push(movimentacao);
             } else if (linha.trim()) {
