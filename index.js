@@ -170,7 +170,7 @@ async function main() {
                     tipo,
                     descricao: descricao.trim(),
                 };
-                movimentacao.identificador = uuidv4();
+                movimentacao.identificador = `${data}-${valor}-${tipo}-${descricao}`;
                 // adiciona a movimentação no array de movimentações
                 movimentacaoFormatada.movimentacoes.push(movimentacao);
             } else if (linha.trim()) {
