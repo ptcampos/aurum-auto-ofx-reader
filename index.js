@@ -157,6 +157,7 @@ async function main() {
                 // da posição 176 até 225 é a descrição da movimentação
                 const linhaComTrim = linha.trim();
                 // const identificador = linhaComTrim.substring(0, 15);
+                const identificador = linhaComTrim.substring(0, 17);
                 const data = linhaComTrim.substring(142, 150);
                 const valor = linhaComTrim.substring(150, 168);
                 const tipo = linhaComTrim.substring(168, 169);
@@ -164,13 +165,13 @@ async function main() {
                 // formata os dados da movimentação
                 movimentacao = {
                     ...movimentacao,
-                    // identificador: identificador.trim(),
+                    identificador: identificador.trim(),
                     data: moment(data, "DDMMYYYY").format("DD/MM/YYYY"),
                     valor: parseFloat(valor) / 100,
                     tipo,
                     descricao: descricao.trim(),
                 };
-                movimentacao.identificador = `${data}-${valor}-${tipo}-${descricao}`;
+                // movimentacao.identificador = `${data}-${valor}-${tipo}-${descricao}`;
                 // adiciona a movimentação no array de movimentações
                 movimentacaoFormatada.movimentacoes.push(movimentacao);
             } else if (linha.trim()) {
