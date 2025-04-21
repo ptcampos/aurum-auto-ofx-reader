@@ -27,6 +27,7 @@ const padraoNome = "ext_";
 const URLAURUMsParaEnviar = [
     "https://aurum-v2.sistemaaurum.com",
     "http://grupoyes.sistemaaurum.com",
+    "https://puketcuritiba.sistemaaurum.com"
 ];
 
 const DIAS_PARA_REGREDIR = 1;
