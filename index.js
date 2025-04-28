@@ -30,7 +30,7 @@ const URLAURUMsParaEnviar = [
     "https://puketcuritiba.sistemaaurum.com"
 ];
 
-const DIAS_PARA_REGREDIR = 5;
+const DIAS_PARA_REGREDIR = 4;
 
 // Função para ler os arquivos
 async function retornaOsArquivosOfxDeXDiasAtrasAteHoje(
