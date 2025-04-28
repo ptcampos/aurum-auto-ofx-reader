@@ -166,7 +166,7 @@ async function main() {
                 // formata os dados da movimentação
                 movimentacao = {
                     ...movimentacao,
-                    identificador: identificador.trim(),
+                    identificador: `${identificador.trim()}-${data}-${valor}-${tipo}-${descricao}`,
                     data: moment(data, "DDMMYYYY").format("DD/MM/YYYY"),
                     valor: parseFloat(valor) / 100,
                     tipo,
