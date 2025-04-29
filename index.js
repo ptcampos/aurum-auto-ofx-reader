@@ -138,10 +138,10 @@ async function main() {
             movimentacoes: [],
         };
 
-        const createHash = (identificador, data, valor, tipo, descricao) => {
+        const createHash = (codigoBanco, agencia, numeroDaContaSemDigito, identificador, data, valor, tipo, descricao) => {
             return crypto
                 .createHash("sha256")
-                .update(`${identificador}-${data}-${valor}-${tipo}-${descricao}`)
+                .update(`${codigoBanco}-${agencia}-${numeroDaContaSemDigito}-${identificador}-${data}-${valor}-${tipo}-${descricao}`)
                 .digest("hex");
         };
         // recupera as linhas do arquivo
@@ -175,6 +175,9 @@ async function main() {
                 movimentacao = {
                     ...movimentacao,
                     identificador: createHash(
+                        codigoBanco,
+                        agencia,
+                        numeroDaContaSemDigito,
                         identificador,
                         data,
                         valor,
