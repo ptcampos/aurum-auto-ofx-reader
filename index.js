@@ -16,6 +16,7 @@ const { isAxiosError } = require("axios");
 const nodeCron = require("node-cron");
 const { get } = require("lodash");
 const { v4: uuidv4 } = require("uuid");
+const crypto = require("crypto");
 
 const dotenv = require("dotenv");
 dotenv.config();
@@ -136,6 +137,13 @@ async function main() {
             numeroConta: numeroDaContaSemDigito,
             movimentacoes: [],
         };
+
+        const createHash = (identificador, data, valor, tipo, descricao) => {
+            return crypto
+                .createHash("sha256")
+                .update(`${identificador}-${data}-${valor}-${tipo}-${descricao}`)
+                .digest("hex");
+        };
         // recupera as linhas do arquivo
         const linhas = conteudo.split("\n");
         // percorre as linhas do arquivo
@@ -166,7 +174,13 @@ async function main() {
                 // formata os dados da movimentação
                 movimentacao = {
                     ...movimentacao,
-                    identificador: `${identificador.trim()}-${data}-${valor}-${tipo}-${descricao}`,
+                    identificador: createHash(
+                        identificador,
+                        data,
+                        valor,
+                        tipo,
+                        descricao
+                    ),
                     data: moment(data, "DDMMYYYY").format("DD/MM/YYYY"),
                     valor: parseFloat(valor) / 100,
                     tipo,
