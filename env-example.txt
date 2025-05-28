@@ -1,0 +1,21 @@
+# OFX Reader Configuration
+
+# Directory where OFX files are located
+OFX_DIR=/path/to/your/ofx/files
+
+# Cron schedule (default: every minute)
+# Examples:
+# */5 * * * * = every 5 minutes
+# 0 */2 * * * = every 2 hours
+# 0 9 * * * = daily at 9 AM
+CRON_STR=*/1 * * * *
+
+# Batching Configuration to prevent server overload
+# Number of files to send per batch (default: 2)
+BATCH_SIZE=2
+
+# Delay in milliseconds between batches (default: 2000ms = 2 seconds)
+DELAY_BETWEEN_BATCHES=2000
+
+# Delay in milliseconds between sending to different services (default: 1000ms = 1 second)
+DELAY_BETWEEN_SERVICES=1000
