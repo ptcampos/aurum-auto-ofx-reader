@@ -24,6 +24,23 @@ dotenv.config();
 // Define as variáveis
 const dir = process.env.OFX_DIR;
 const padraoNome = "ext_";
+
+// Validação das variáveis de ambiente obrigatórias
+if (!dir) {
+    console.error("❌ ERRO: A variável de ambiente OFX_DIR não está configurada!");
+    console.error("📝 Por favor, configure OFX_DIR no seu arquivo .env com o caminho para a pasta dos arquivos OFX.");
+    console.error("💡 Exemplo: OFX_DIR=/caminho/para/seus/arquivos/ofx");
+    process.exit(1);
+}
+
+if (!fs.existsSync(dir)) {
+    console.error(`❌ ERRO: O diretório especificado não existe: ${dir}`);
+    console.error("📝 Por favor, verifique se o caminho está correto e se o diretório existe.");
+    process.exit(1);
+}
+
+console.log(`📁 Diretório configurado: ${dir}`);
+
 // LISTA COM AS URLs DAS AURUMs
 const URLAURUMsParaEnviar = [
     "https://aurum-v2.sistemaaurum.com",
