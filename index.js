@@ -65,6 +65,11 @@ const BATCH_SIZE = parseInt(process.env.BATCH_SIZE) || 2; // Número de arquivos
 const DELAY_BETWEEN_BATCHES = parseInt(process.env.DELAY_BETWEEN_BATCHES) || 2000; // Delay em ms entre lotes
 const DELAY_BETWEEN_SERVICES = parseInt(process.env.DELAY_BETWEEN_SERVICES) || 1000; // Delay em ms entre serviços
 
+// Configurações de timeout e retry
+const REQUEST_TIMEOUT = parseInt(process.env.REQUEST_TIMEOUT) || 60000; // Timeout em ms (default: 60s)
+const MAX_RETRIES = parseInt(process.env.MAX_RETRIES) || 2; // Número máximo de tentativas
+const RETRY_DELAY = parseInt(process.env.RETRY_DELAY) || 5000; // Delay entre tentativas (default: 5s)
+
 // Função para adicionar delay
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -105,6 +110,33 @@ async function retornaOsArquivosOfxDeXDiasAtrasAteHoje(
     });
 }
 
+// Função para fazer requisição com retry
+async function makeRequestWithRetry(url, data, headers, attempt = 1) {
+    try {
+        const response = await axios.post(
+            `${url}/api/ext-salva-movimentacoes-externas`,
+            data,
+            {
+                headers,
+                timeout: REQUEST_TIMEOUT
+            }
+        );
+        return { success: true, response };
+    } catch (error) {
+        const isLastAttempt = attempt >= MAX_RETRIES;
+        const errorMessage = error.code === 'ECONNABORTED' ? 'timeout' : error.message;
+
+        if (!isLastAttempt) {
+            console.log(`  ⚠️  Tentativa ${attempt}/${MAX_RETRIES} falhou (${errorMessage}). Tentando novamente em ${RETRY_DELAY}ms...`);
+            await sleep(RETRY_DELAY);
+            return makeRequestWithRetry(url, data, headers, attempt + 1);
+        }
+
+        console.log(`  ❌ Todas as ${MAX_RETRIES} tentativas falharam para ${url}`);
+        return { success: false, error };
+    }
+}
+
 async function enviaAsMovimentacoesExtraidasParaAURUMs(
     movimentacoesPorArquivo
 ) {
@@ -131,32 +163,28 @@ async function enviaAsMovimentacoesExtraidasParaAURUMs(
                 "Content-Type": "application/json",
             };
 
-            try {
-                const response = await axios.post(
-                    `${url}/api/ext-salva-movimentacoes-externas`,
-                    {
-                        movimentacoesPorArquivo: batch,
-                    },
-                    {
-                        headers,
-                        timeout: 30000 // 30 segundos de timeout
-                    }
-                );
+            const result = await makeRequestWithRetry(
+                url,
+                {
+                    movimentacoesPorArquivo: batch,
+                },
+                headers
+            );
 
+            if (result.success) {
                 allResponses.push({
                     lote: batchIndex + 1,
                     servico: serviceIndex + 1,
                     arquivosEnviados: batch.length,
-                    serverResponse: response.data,
+                    serverResponse: result.response.data,
                     url,
                 });
 
                 console.log(`  ✅ Sucesso no envio para ${url}`);
-
-            } catch (error) {
-                let formattedServerResponse = error;
-                if (isAxiosError(error)) {
-                    formattedServerResponse = get(error, "response.data", error);
+            } else {
+                let formattedServerResponse = result.error;
+                if (isAxiosError(result.error)) {
+                    formattedServerResponse = get(result.error, "response.data", result.error);
                 }
 
                 allErrorResponses.push({
@@ -167,7 +195,7 @@ async function enviaAsMovimentacoesExtraidasParaAURUMs(
                     serverResponse: formattedServerResponse,
                 });
 
-                console.log(`  ❌ Erro no envio para ${url}:`, error.message);
+                console.log(`  ❌ Erro final no envio para ${url}:`, result.error.message);
             }
 
             // Delay entre serviços (exceto no último serviço)

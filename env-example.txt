@@ -8,7 +8,7 @@ OFX_DIR=/path/to/your/ofx/files
 # */5 * * * * = every 5 minutes
 # 0 */2 * * * = every 2 hours
 # 0 9 * * * = daily at 9 AM
-CRON_STR=*/1 * * * *
+CRON_STR=*/1 * * *
 
 # Batching Configuration to prevent server overload
 # Number of files to send per batch (default: 2)
@@ -19,3 +19,13 @@ DELAY_BETWEEN_BATCHES=2000
 
 # Delay in milliseconds between sending to different services (default: 1000ms = 1 second)
 DELAY_BETWEEN_SERVICES=1000
+
+# Timeout and Retry Configuration
+# Request timeout in milliseconds (default: 60000ms = 60 seconds)
+REQUEST_TIMEOUT=90000
+
+# Maximum number of retry attempts per request (default: 2)
+MAX_RETRIES=2
+
+# Delay in milliseconds between retry attempts (default: 5000ms = 5 seconds)
+RETRY_DELAY=5000
