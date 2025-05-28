@@ -17,9 +17,19 @@ const nodeCron = require("node-cron");
 const { get } = require("lodash");
 const { v4: uuidv4 } = require("uuid");
 const crypto = require("crypto");
+const path = require("path");
 
+// Configure dotenv with explicit path to handle PM2 working directory issues
 const dotenv = require("dotenv");
-dotenv.config();
+const envPath = path.resolve(__dirname, '.env');
+const result = dotenv.config({ path: envPath });
+
+if (result.error) {
+    console.warn(`⚠️  Aviso: Não foi possível carregar o arquivo .env de ${envPath}`);
+    console.warn("🔍 Verificando variáveis de ambiente do sistema...");
+} else {
+    console.log(`✅ Arquivo .env carregado com sucesso de ${envPath}`);
+}
 
 // Define as variáveis
 const dir = process.env.OFX_DIR;
